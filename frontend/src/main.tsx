@@ -68,42 +68,23 @@ function App() {
           type="button"
           className="brand"
           onClick={() => navigate("/")}
-          style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
           aria-label="GDG AI Grader home"
         >
           <span className="brand-mark">G</span>
-          <span>GDG <em>AI</em> Grader</span>
+          <span>
+            GDG <em>AI</em> Grader
+          </span>
         </button>
 
         <div className="nav-links">
           {currentUser ? (
             <>
-              <button
-                type="button"
-                className="nav-text-button"
-                onClick={() => navigate("/exams")}
-                aria-current={isExamsPage ? "page" : undefined}
-              >
-                Exams
-              </button>
-              <button
-                type="button"
-                className="nav-text-button"
-                onClick={() => navigate("/results")}
-                aria-current={isResultsPage ? "page" : undefined}
-              >
-                Results
-              </button>
-              {canManageExams && (
-                <button
-                  type="button"
-                  className="nav-text-button"
-                  onClick={() => navigate(EXAM_BUILDER_PATH)}
-                  aria-current={isExamBuilderPage ? "page" : undefined}
-                >
-                  New exam
-                </button>
-              )}
               <span style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}>
                 {currentUser.email}
               </span>
@@ -145,7 +126,7 @@ function App() {
           onRegisterSuccess={() =>
             navigate(
               "/login",
-              "Account created successfully! Please sign in with your credentials."
+              "Account created successfully! Please sign in with your credentials.",
             )
           }
           onNavigateToLogin={() => navigate("/login")}
@@ -167,9 +148,18 @@ function App() {
         <>
           <section className="hero hero-centered container" id="top">
             <div className="hero-copy">
-              <p className="eyebrow"><span className="eyebrow-line" /> AI-ASSISTED GRADING</p>
-              <h1>Clear feedback.<br /><span>Less busywork.</span></h1>
-              <p className="hero-text">Review AI suggestions, adjust when needed, and share thoughtful feedback with every learner.</p>
+              <p className="eyebrow">
+                <span className="eyebrow-line" /> AI-ASSISTED GRADING
+              </p>
+              <h1>
+                Clear feedback.
+                <br />
+                <span>Less busywork.</span>
+              </h1>
+              <p className="hero-text">
+                Review AI suggestions, adjust when needed, and share thoughtful
+                feedback with every learner.
+              </p>
               <div className="hero-actions">
                 <button
                   type="button"
@@ -183,9 +173,21 @@ function App() {
           </section>
 
           <section className="proof-strip">
-            <div className="container proof-inner">
+            <div className="proof-inner container">
               <p>HOW IT WORKS</p>
-              <div className="proof-items"><span><b>1.</b> Upload</span><i /><span><b>2.</b> Review</span><i /><span><b>3.</b> Share feedback</span></div>
+              <div className="proof-items">
+                <span>
+                  <b>1.</b> Upload
+                </span>
+                <i />
+                <span>
+                  <b>2.</b> Review
+                </span>
+                <i />
+                <span>
+                  <b>3.</b> Share feedback
+                </span>
+              </div>
             </div>
           </section>
         </>
