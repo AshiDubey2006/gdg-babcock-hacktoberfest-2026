@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     ollama_url: str = "http://ollama:11434"
     ollama_chat_model: str = "llama3.2:3b"
     ollama_embedding_model: str = "nomic-embed-text"
+    app_env: str = "production"
+    allow_sample_seed: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="", extra="ignore")
 
@@ -21,4 +23,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

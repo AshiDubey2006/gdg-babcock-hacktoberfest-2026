@@ -41,6 +41,23 @@ uvicorn app.main:app --reload
 
 On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`. The API runs at <http://localhost:8000>; interactive API docs are at <http://localhost:8000/docs>.
 
+### Seed fictional sample exams
+
+To add fictional exams, questions, and rubric points for local development, run the seed command from `backend/`. Seeding is disabled unless both settings explicitly allow it. Add these values to your local, uncommitted `backend/.env`:
+
+```dotenv
+APP_ENV=development
+ALLOW_SAMPLE_SEED=true
+```
+
+An admin or superadmin account must already exist in the configured database; the seed command does not create or promote users. Then run:
+
+```bash
+python -m app.seed
+```
+
+The command inserts only sample exams that do not already exist and leaves existing records unchanged when run again. Do not enable sample seeding in production.
+
 ## 3. Frontend setup
 
 Use Node.js 20 or newer in a second terminal:
