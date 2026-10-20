@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./style.css";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
+import { ExamsPage } from "./pages/Exams";
 import { clearStoredToken, getCurrentUser, type UserResponse } from "./api";
 
 const Arrow = () => (
@@ -50,6 +51,7 @@ function App() {
 
   const isLoginPage = currentPath === "/login";
   const isRegisterPage = currentPath === "/register";
+  const isExamsPage = currentPath === "/exams";
 
   return (
     <main className="page-shell">
@@ -68,6 +70,14 @@ function App() {
         <div className="nav-links">
           {currentUser ? (
             <>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate("/exams")}
+                aria-current={isExamsPage ? "page" : undefined}
+              >
+                Exams
+              </button>
               <span style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}>
                 {currentUser.email}
               </span>
@@ -117,7 +127,9 @@ function App() {
         />
       )}
 
-      {!isLoginPage && !isRegisterPage && (
+      {isExamsPage && <ExamsPage />}
+
+      {!isLoginPage && !isRegisterPage && !isExamsPage && (
         <>
           <section className="hero hero-centered container" id="top">
             <div className="hero-copy">
