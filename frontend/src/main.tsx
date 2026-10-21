@@ -4,7 +4,10 @@ import { createRoot } from "react-dom/client";
 import "./style.css";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
+import { AdminExamBuilderPage } from "./pages/AdminExamBuilder";
 import { clearStoredToken, getCurrentUser, type UserResponse } from "./api";
+
+const EXAM_BUILDER_PATH = "/admin/exams/new";
 
 const Arrow = () => (
   <svg aria-hidden="true" viewBox="0 0 18 18" className="arrow">
@@ -50,6 +53,9 @@ function App() {
 
   const isLoginPage = currentPath === "/login";
   const isRegisterPage = currentPath === "/register";
+  const isExamBuilderPage = currentPath === EXAM_BUILDER_PATH;
+  const canManageExams =
+    currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
   return (
     <main className="page-shell">
@@ -68,6 +74,16 @@ function App() {
         <div className="nav-links">
           {currentUser ? (
             <>
+              {canManageExams && (
+                <button
+                  type="button"
+                  className="nav-text-button"
+                  onClick={() => navigate(EXAM_BUILDER_PATH)}
+                  aria-current={isExamBuilderPage ? "page" : undefined}
+                >
+                  New exam
+                </button>
+              )}
               <span style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}>
                 {currentUser.email}
               </span>
@@ -117,7 +133,9 @@ function App() {
         />
       )}
 
-      {!isLoginPage && !isRegisterPage && (
+      {isExamBuilderPage && <AdminExamBuilderPage />}
+
+      {!isLoginPage && !isRegisterPage && !isExamBuilderPage && (
         <>
           <section className="hero hero-centered container" id="top">
             <div className="hero-copy">
