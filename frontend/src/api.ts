@@ -1,4 +1,4 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   ((import.meta as any).env.VITE_API_URL as string | undefined) ||
   "http://localhost:8000";
 
@@ -46,7 +46,7 @@ export function clearStoredToken(): void {
 }
 
 // API helpers
-async function parseApiError(response: Response): Promise<ApiError> {
+export async function parseApiError(response: Response): Promise<ApiError> {
   try {
     const data = await response.json();
     if (data && typeof data === "object") {
