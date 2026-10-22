@@ -7,11 +7,12 @@ from app.auth import create_access_token, hash_password, verify_password
 from app.dependencies import SessionDep, get_current_user
 from app.models import User
 from app.schemas import LoginRequest, RegisterRequest, TokenResponse, UserResponse
+from app.rate_limits import rate_limit_dependency
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(rate_limit_dependency)])
 def register(payload: RegisterRequest, session: SessionDep):
     email = payload.email.lower()
     if session.exec(select(User).where(User.email == email)).first():
@@ -23,7 +24,7 @@ def register(payload: RegisterRequest, session: SessionDep):
     return user
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[Depends(rate_limit_dependency)])
 def login(payload: LoginRequest, session: SessionDep):
     user = session.exec(select(User).where(User.email == payload.email.lower())).first()
     if user is None or not verify_password(payload.password, user.password_hash) or not user.is_active:
