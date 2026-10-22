@@ -5,6 +5,7 @@ import "./style.css";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import { ExamsPage } from "./pages/Exams";
+import { ResultsPage } from "./pages/Results";
 import { AdminExamBuilderPage } from "./pages/AdminExamBuilder";
 import { clearStoredToken, getCurrentUser, type UserResponse } from "./api";
 
@@ -55,6 +56,7 @@ function App() {
   const isLoginPage = currentPath === "/login";
   const isRegisterPage = currentPath === "/register";
   const isExamsPage = currentPath === "/exams";
+  const isResultsPage = currentPath === "/results";
   const isExamBuilderPage = currentPath === EXAM_BUILDER_PATH;
   const canManageExams =
     currentUser?.role === "admin" || currentUser?.role === "superadmin";
@@ -83,6 +85,14 @@ function App() {
                 aria-current={isExamsPage ? "page" : undefined}
               >
                 Exams
+              </button>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate("/results")}
+                aria-current={isResultsPage ? "page" : undefined}
+              >
+                Results
               </button>
               {canManageExams && (
                 <button
@@ -145,9 +155,15 @@ function App() {
 
       {isExamsPage && <ExamsPage />}
 
+      {isResultsPage && <ResultsPage />}
+
       {isExamBuilderPage && <AdminExamBuilderPage />}
 
-      {!isLoginPage && !isRegisterPage && !isExamsPage && !isExamBuilderPage && (
+      {!isLoginPage &&
+        !isRegisterPage &&
+        !isExamsPage &&
+        !isResultsPage &&
+        !isExamBuilderPage && (
         <>
           <section className="hero hero-centered container" id="top">
             <div className="hero-copy">
