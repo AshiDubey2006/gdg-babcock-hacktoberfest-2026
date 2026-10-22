@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./style.css";
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
+import { ExamsPage } from "./pages/Exams";
 import { AdminExamBuilderPage } from "./pages/AdminExamBuilder";
 import { clearStoredToken, getCurrentUser, type UserResponse } from "./api";
 
@@ -53,6 +54,7 @@ function App() {
 
   const isLoginPage = currentPath === "/login";
   const isRegisterPage = currentPath === "/register";
+  const isExamsPage = currentPath === "/exams";
   const isExamBuilderPage = currentPath === EXAM_BUILDER_PATH;
   const canManageExams =
     currentUser?.role === "admin" || currentUser?.role === "superadmin";
@@ -74,6 +76,14 @@ function App() {
         <div className="nav-links">
           {currentUser ? (
             <>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate("/exams")}
+                aria-current={isExamsPage ? "page" : undefined}
+              >
+                Exams
+              </button>
               {canManageExams && (
                 <button
                   type="button"
@@ -133,9 +143,11 @@ function App() {
         />
       )}
 
+      {isExamsPage && <ExamsPage />}
+
       {isExamBuilderPage && <AdminExamBuilderPage />}
 
-      {!isLoginPage && !isRegisterPage && !isExamBuilderPage && (
+      {!isLoginPage && !isRegisterPage && !isExamsPage && !isExamBuilderPage && (
         <>
           <section className="hero hero-centered container" id="top">
             <div className="hero-copy">
