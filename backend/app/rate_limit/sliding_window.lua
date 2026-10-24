@@ -25,7 +25,7 @@ redis.call('ZREMRANGEBYSCORE',key,'-inf', window_start)
 local request_count= redis.call('ZCARD',key)
 
 -- Step 5: Reject request if the count is greater than limit
-if request_count>=limit
+if request_count>=limit then
     return {0,0}
 end
 
