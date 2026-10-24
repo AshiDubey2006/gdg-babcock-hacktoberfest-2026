@@ -9,6 +9,7 @@ services:
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-change-me-now}
       OLLAMA_URL: http://ollama:11434
+      REDIS_URL: redis://redis:6379/0
     volumes: ["grader-data:/data"]
   frontend:
     image: node:22-alpine
@@ -17,6 +18,10 @@ services:
     ports: ["5173:5173"]
     volumes: ["./frontend:/app", "/app/node_modules"]
     environment: ["VITE_API_URL=http://localhost:8000"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: ["redis-data:/data"]
   ollama:
     image: ollama/ollama:latest
     profiles: ["ollama"]
