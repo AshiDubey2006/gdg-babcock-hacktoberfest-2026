@@ -10,7 +10,7 @@ services:
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-change-me-now}
       OLLAMA_URL: http://ollama:11434
       REDIS_URL: redis://redis:6379/0
-    volumes: ["grader-data:/data"]
+    volumes: ["grader-data:/data","./backend:/app"]
   frontend:
     image: node:22-alpine
     working_dir: /app
@@ -30,3 +30,4 @@ services:
 volumes:
   grader-data:
   ollama-data:
+  redis-data: 
