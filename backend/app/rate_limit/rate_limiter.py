@@ -1,9 +1,14 @@
-from fastapi import HTTPException,status, Request
+from fastapi import HTTPException,status, Request, Depends
 from pathlib import Path
+from typing import Annotated
 from uuid import uuid4
 from redis.asyncio import Redis
-from app.dependencies import AdminDep
-from app.redis import redis_client
+from app.redis.redis_client import redis_client
+from app.models import User, Role
+from app.dependencies import require_roles
+
+
+AdminDep = Annotated[User, Depends(require_roles(Role.admin, Role.superadmin))]
 
 
 # Class to initialize a sliding window rate limiter implemented by Lua script 
@@ -76,3 +81,32 @@ async def override_submission_rate_limit_dependency(admin: AdminDep):
             
         
         
+
+# Incoming request
+#    |
+#    v
+# Bearer token is read
+#    |
+#    v
+# get_current_user()
+#    |
+#    |-- decode JWT
+#    |-- read "sub" as user_id
+#    |-- fetch User from DB
+#    |-- check is_active
+#    |
+#    v
+# require_roles(Role.admin, Role.superadmin)
+#    |
+#    |-- checks user.role
+#    |-- 403 if not admin/superadmin
+#    |
+#    v
+# grading_rate_limit_dependency(admin)
+#    |
+#    |-- key = f"rate_limit:grading:user:{admin.id}"
+#    |-- call rate limiter
+#    |-- 429 if too many requests
+#    |
+#    v
+# grade_submission()
