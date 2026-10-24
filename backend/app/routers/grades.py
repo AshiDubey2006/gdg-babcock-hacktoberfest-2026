@@ -7,7 +7,7 @@ from app.dependencies import SessionDep, require_roles
 from app.graders import GradeProposal, GradingContext, get_grader
 from app.models import Answer, Exam, Grade, Question, Role, RubricPoint, Submission, User
 from app.schemas import GradeOverride
-from app.rate_limit import override_submission_rate_limit_dependency, grade_submission_rate_limit_dependency
+from app.rate_limit.rate_limiter import override_submission_rate_limit_dependency, grade_submission_rate_limit_dependency
 
 router = APIRouter(tags=["grading"])
 AdminDep = Annotated[User, Depends(require_roles(Role.admin, Role.superadmin))]
