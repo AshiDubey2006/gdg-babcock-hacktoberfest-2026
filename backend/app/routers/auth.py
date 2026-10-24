@@ -7,7 +7,7 @@ from app.auth import create_access_token, hash_password, verify_password
 from app.dependencies import SessionDep, get_current_user
 from app.models import User
 from app.schemas import LoginRequest, RegisterRequest, TokenResponse, UserResponse
-from app.rate_limit import login_rate_limit_dependency,register_rate_limit_dependency
+from app.rate_limit.rate_limiter import login_rate_limit_dependency,register_rate_limit_dependency
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
