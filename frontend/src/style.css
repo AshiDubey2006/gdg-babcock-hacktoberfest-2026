@@ -1137,21 +1137,6 @@ h2 span {
   font-weight: 600;
 }
 
-.state-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #dce9df;
-  border-top-color: #1c754b;
-  border-radius: 50%;
-  animation: state-spin 0.8s linear infinite;
-}
-
-@keyframes state-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .async-state-empty {
   padding: 56px 24px;
   background: #fbfcf9;
@@ -1219,12 +1204,6 @@ h2 span {
 
 .async-state-error .async-state-title {
   color: #713d21;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .state-spinner {
-    animation: none;
-  }
 }
 
 /* Exams list */

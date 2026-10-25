@@ -13,7 +13,6 @@ export function LoadingState({ message, children }: LoadingStateProps) {
       aria-live="polite"
       aria-busy="true"
     >
-      <span className="state-spinner" aria-hidden="true" />
       <p className="async-state-message">{message}</p>
       {children}
     </div>
