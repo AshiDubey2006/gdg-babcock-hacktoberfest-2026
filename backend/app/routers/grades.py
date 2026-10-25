@@ -7,12 +7,13 @@ from app.dependencies import SessionDep, require_roles
 from app.graders import GradeProposal, GradingContext, get_grader
 from app.models import Answer, Exam, Grade, Question, Role, RubricPoint, Submission, User
 from app.schemas import GradeOverride
+from app.rate_limit.rate_limiter import override_submission_rate_limit_dependency, grade_submission_rate_limit_dependency
 
 router = APIRouter(tags=["grading"])
 AdminDep = Annotated[User, Depends(require_roles(Role.admin, Role.superadmin))]
 
 
-@router.post("/submissions/{submission_id}/grade")
+@router.post("/submissions/{submission_id}/grade", dependencies=[Depends(grade_submission_rate_limit_dependency)])
 def grade_submission(submission_id: int, session: SessionDep, admin: AdminDep):
     submission = session.get(Submission, submission_id)
     if submission is None:
@@ -52,7 +53,7 @@ def grade_submission(submission_id: int, session: SessionDep, admin: AdminDep):
     return results
 
 
-@router.patch("/grades/{grade_id}")
+@router.patch("/grades/{grade_id}",dependencies=[Depends(override_submission_rate_limit_dependency)])
 def override_grade(grade_id: int, payload: GradeOverride, session: SessionDep, admin: AdminDep):
     grade = session.get(Grade, grade_id)
     if grade is None:
