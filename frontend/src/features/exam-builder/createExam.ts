@@ -1,4 +1,5 @@
-import { API_BASE_URL, getStoredToken, parseApiError, type ApiError } from "../../api";
+import { toApiError, type ApiError } from "../../lib/apiError";
+import { http, unwrap } from "../../lib/http";
 import type { CreatedExam, ExamBuilderPayload } from "./types";
 
 export class QuestionCreationError extends Error {
@@ -15,43 +16,14 @@ export class QuestionCreationError extends Error {
   }
 }
 
-function authHeaders(): Record<string, string> {
-  try {
-    return { Authorization: `Bearer ${getStoredToken()}` };
-  } catch {
-    return {};
-  }
-}
-
-async function postJson<T>(path: string, body: unknown): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeaders() },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw {
-      message: "Please check your connection",
-    } as ApiError;
-  }
-
-  if (!response.ok) {
-    throw await parseApiError(response);
-  }
-
-  return (await response.json()) as T;
-}
-
 export async function createExam(payload: ExamBuilderPayload): Promise<CreatedExam> {
-  const exam = await postJson<CreatedExam>("/exams", payload.exam);
+  const exam = await unwrap(http.post<CreatedExam>("/exams", payload.exam));
 
   for (const [index, question] of payload.questions.entries()) {
     try {
-      await postJson<unknown>(`/exams/${exam.id}/questions`, question);
+      await http.post(`/exams/${exam.id}/questions`, question);
     } catch (err: unknown) {
-      throw new QuestionCreationError(exam.id, index + 1, err as ApiError);
+      throw new QuestionCreationError(exam.id, index + 1, toApiError(err));
     }
   }
 

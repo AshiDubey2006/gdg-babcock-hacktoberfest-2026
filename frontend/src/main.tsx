@@ -1,16 +1,18 @@
-/// <reference types="vite/client" />
 import { Suspense, startTransition, use, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
-import { clearStoredToken } from "./api";
 import { Arrow } from "./components/Arrow";
-import { canAccess, safeNextPath } from "./features/auth/access";
+import { buildLoginPath, canAccess, safeNextPath } from "./features/auth/access";
 import { RouteGuard } from "./features/auth/RouteGuard";
 import { ROUTES, findRoute } from "./features/auth/routes";
 import { loadSession, type Session } from "./features/auth/session";
+import { onUnauthorized } from "./lib/http";
+import { clearAccessToken } from "./lib/tokenStorage";
 
 const LOADING_SESSION: Session = { status: "loading" };
+const ANONYMOUS_SESSION: Session = { status: "anonymous" };
 const SIGN_IN_NOTICE = "Sign in to continue.";
+const SESSION_EXPIRED_NOTICE = "Your session has expired. Please sign in again.";
 
 interface AppLocation {
   pathname: string;
@@ -151,6 +153,21 @@ function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  useEffect(
+    () =>
+      onUnauthorized(() => {
+        // Read the live URL: this listener is subscribed once, so `location` would be stale.
+        const { pathname, search } = window.location;
+        startTransition(() => {
+          setSessionPromise(Promise.resolve(ANONYMOUS_SESSION));
+          if (findRoute(pathname).access.kind !== "public") {
+            replace(buildLoginPath(pathname + search), SESSION_EXPIRED_NOTICE);
+          }
+        });
+      }),
+    [],
+  );
+
   function showCurrentLocation(notice?: string) {
     setLocation(readLocation());
     setNoticeMessage(notice || null);
@@ -177,9 +194,9 @@ function App() {
   }
 
   function handleLogout() {
-    clearStoredToken();
+    clearAccessToken();
     startTransition(() => {
-      setSessionPromise(Promise.resolve<Session>({ status: "anonymous" }));
+      setSessionPromise(Promise.resolve(ANONYMOUS_SESSION));
       navigate("/");
     });
   }
