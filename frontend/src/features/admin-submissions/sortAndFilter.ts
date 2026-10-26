@@ -44,7 +44,7 @@ export function sortSubmissions(
   );
 }
 
-export function filterSubmission(
+export function filterSubmissions(
   rows: readonly SubmissionRow[],
   filters: Filters,
 ): SubmissionRow[] {
@@ -55,8 +55,6 @@ export function filterSubmission(
         row.review_status === filters.reviewStatus),
   );
 }
-
-export const filterSubmissions = filterSubmission;
 
 export function hasActiveFilters(filters: Filters): boolean {
   return filters.status !== "all" || filters.reviewStatus !== "all";

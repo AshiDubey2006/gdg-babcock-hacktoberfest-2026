@@ -5,6 +5,7 @@ import { LandingPage } from "../../pages/Landing";
 import { LoginPage } from "../../pages/Login";
 import { RegisterPage } from "../../pages/Register";
 import { ResultsPage } from "../../pages/Results";
+import Submissions from "../../pages/Submissions";
 import type { Access } from "./access";
 import type { Session } from "./session";
 
@@ -30,7 +31,10 @@ const LANDING_ROUTE: AppRoute = {
   path: "/",
   access: PUBLIC,
   render: ({ session, navigate }) => (
-    <LandingPage signedIn={session.status === "authenticated"} onNavigate={navigate} />
+    <LandingPage
+      signedIn={session.status === "authenticated"}
+      onNavigate={navigate}
+    />
   ),
 };
 
@@ -56,7 +60,7 @@ export const ROUTES: readonly AppRoute[] = [
         onRegisterSuccess={() =>
           navigate(
             "/login",
-            "Account created successfully! Please sign in with your credentials."
+            "Account created successfully! Please sign in with your credentials.",
           )
         }
         onNavigateToLogin={() => navigate("/login")}
@@ -64,13 +68,28 @@ export const ROUTES: readonly AppRoute[] = [
       />
     ),
   },
-  { path: "/exams", access: SIGNED_IN, navLabel: "Exams", render: () => <ExamsPage /> },
-  { path: "/results", access: SIGNED_IN, navLabel: "Results", render: () => <ResultsPage /> },
+  {
+    path: "/exams",
+    access: SIGNED_IN,
+    navLabel: "Exams",
+    render: () => <ExamsPage />,
+  },
+  {
+    path: "/results",
+    access: SIGNED_IN,
+    navLabel: "Results",
+    render: () => <ResultsPage />,
+  },
   {
     path: "/admin/exams/new",
     access: EXAM_MANAGERS,
     navLabel: "New exam",
     render: () => <AdminExamBuilderPage />,
+  },
+  {
+    path: "/submissions",
+    access: PUBLIC,
+    render: () => <Submissions />,
   },
 ];
 

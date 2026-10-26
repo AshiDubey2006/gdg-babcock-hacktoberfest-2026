@@ -1,13 +1,13 @@
 import { useId, useMemo, useState } from "react";
 import { EmptyState } from "./EmptyState";
 import { MOCK_SUBMISSIONS } from "./mockData";
+import type { Filters, SortKey, SortState } from "./sortAndFilter";
 import {
   DEFAULT_FILTERS,
   DEFAULT_SORT,
   filterSubmissions,
   sortSubmissions,
 } from "./sortAndFilter";
-import type { Filters, SortKey, SortState } from "./sortAndFilter";
 import { SubmissionsTable } from "./SubmissionsTable";
 import { SubmissionsToolbar } from "./SubmissionsToolbar";
 import { toRow } from "./types";

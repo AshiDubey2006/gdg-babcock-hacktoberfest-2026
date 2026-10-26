@@ -1,15 +1,15 @@
-import { useId } from "react";
 import type { ChangeEvent } from "react";
+import { useId } from "react";
+import type { Filters } from "./sortAndFilter";
+import { hasActiveFilters } from "./sortAndFilter";
 import {
-  SUBMISSION_STATUSES,
   REVIEW_STATUSES,
-  SUBMISSION_STATUS_LABELS,
   REVIEW_STATUS_LABELS,
+  SUBMISSION_STATUSES,
+  SUBMISSION_STATUS_LABELS,
   isReviewStatus,
   isSubmissionStatus,
 } from "./types";
-import { hasActiveFilters } from "./sortAndFilter";
-import type { Filters } from "./sortAndFilter";
 
 type SubmissionsToolbarProps = {
   filters: Filters;

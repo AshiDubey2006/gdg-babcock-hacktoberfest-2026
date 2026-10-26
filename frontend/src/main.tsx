@@ -6,7 +6,6 @@ import { buildLoginPath, canAccess, safeNextPath } from "./features/auth/access"
 import { RouteGuard } from "./features/auth/RouteGuard";
 import { ROUTES, findRoute } from "./features/auth/routes";
 import { loadSession, type Session } from "./features/auth/session";
-import Submissions from "./pages/Submissions";
 import { onUnauthorized } from "./lib/http";
 import { clearAccessToken } from "./lib/tokenStorage";
 
@@ -14,6 +13,7 @@ const LOADING_SESSION: Session = { status: "loading" };
 const ANONYMOUS_SESSION: Session = { status: "anonymous" };
 const SIGN_IN_NOTICE = "Sign in to continue.";
 const SESSION_EXPIRED_NOTICE = "Your session has expired. Please sign in again.";
+
 
 interface AppLocation {
   pathname: string;

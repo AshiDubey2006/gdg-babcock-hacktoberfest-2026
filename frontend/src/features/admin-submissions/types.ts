@@ -26,8 +26,8 @@ export const SUBMISSION_STATUS_LABELS: Record<SubmissionStatus, string> = {
   graded: "Graded",
 };
 export const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
-  needs_review: "Needs Review",
-  pending: "Awaiting Grading",
+  needs_review: "Needs review",
+  pending: "Awaiting grading",
   clear: "No flags",
 };
 

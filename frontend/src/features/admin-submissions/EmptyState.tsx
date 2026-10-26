@@ -1,5 +1,5 @@
-import { hasActiveFilters } from "./sortAndFilter";
 import type { Filters } from "./sortAndFilter";
+import { hasActiveFilters } from "./sortAndFilter";
 import { REVIEW_STATUS_LABELS, SUBMISSION_STATUS_LABELS } from "./types";
 
 function describeFilters(filters: Filters): string[] {
