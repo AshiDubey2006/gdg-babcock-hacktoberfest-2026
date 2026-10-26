@@ -1335,6 +1335,34 @@ h2 span {
   font-weight: 700;
 }
 
+.countdown-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  color: #1c613e;
+  background: #eaf3eb;
+  border: 1px solid #cfe2d2;
+  border-radius: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-timer-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.countdown-timer-value {
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+
+.countdown-timer-expired {
+  color: #8a3f2a;
+  background: #fff1eb;
+  border-color: #f0cbbd;
+}
+
 .skeleton {
   display: block;
   height: 12px;
