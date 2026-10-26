@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { registerUser, type ApiError } from "../api";
+import { loginUser, registerUser, type ApiError } from "../api";
 
 const SuccessIcon = () => (
   <svg
@@ -50,11 +50,14 @@ export function RegisterPage({
   const [loading, setLoading] = useState(false);
 
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
   const [success, setSuccess] = useState(false);
 
   function validate(): boolean {
-    const errors: { email?: string; password?: string; } = {};
+    const errors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
       errors.email = "Email is required.";
@@ -84,14 +87,21 @@ export function RegisterPage({
 
     try {
       await registerUser(email, password);
-      setSuccess(true);
-      onRegisterSuccess();
+
+      try {
+        await loginUser(email, password);
+        onRegisterSuccess();
+      } catch {
+        setSuccess(true);
+      }
     } catch (err: unknown) {
       const apiErr = err as ApiError;
       if (apiErr.fieldErrors) {
         setFieldErrors(apiErr.fieldErrors);
       }
-      setGeneralError(apiErr.message || "An unexpected error occurred. Please try again.");
+      setGeneralError(
+        apiErr.message || "An unexpected error occurred. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -136,7 +146,11 @@ export function RegisterPage({
           <>
             {/* General API Error Alert */}
             {generalError && (
-              <div className="alert alert-error" role="alert" aria-live="assertive">
+              <div
+                className="alert alert-error"
+                role="alert"
+                aria-live="assertive"
+              >
                 <ErrorIcon />
                 <div>{generalError}</div>
               </div>
@@ -146,7 +160,10 @@ export function RegisterPage({
               {/* Email Field */}
               <div className="form-group">
                 <label htmlFor="register-email">
-                  Email Address <span className="required-star" aria-hidden="true">*</span>
+                  Email Address{" "}
+                  <span className="required-star" aria-hidden="true">
+                    *
+                  </span>
                 </label>
                 <input
                   id="register-email"
@@ -161,13 +178,19 @@ export function RegisterPage({
                   }}
                   aria-required="true"
                   aria-invalid={!!fieldErrors.email}
-                  aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
+                  aria-describedby={
+                    fieldErrors.email ? "register-email-error" : undefined
+                  }
                   className={fieldErrors.email ? "input-error" : ""}
                   placeholder="learner@example.com"
                   disabled={loading}
                 />
                 {fieldErrors.email && (
-                  <span id="register-email-error" className="field-error" role="alert">
+                  <span
+                    id="register-email-error"
+                    className="field-error"
+                    role="alert"
+                  >
                     {fieldErrors.email}
                   </span>
                 )}
@@ -176,7 +199,10 @@ export function RegisterPage({
               {/* Password Field */}
               <div className="form-group">
                 <label htmlFor="register-password">
-                  Password <span className="required-star" aria-hidden="true">*</span>
+                  Password{" "}
+                  <span className="required-star" aria-hidden="true">
+                    *
+                  </span>
                 </label>
                 <input
                   id="register-password"
@@ -186,13 +212,18 @@ export function RegisterPage({
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (fieldErrors.password) {
-                      setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        password: undefined,
+                      }));
                     }
                   }}
                   aria-required="true"
                   aria-invalid={!!fieldErrors.password}
                   aria-describedby={
-                    fieldErrors.password ? "register-password-error" : "register-password-hint"
+                    fieldErrors.password
+                      ? "register-password-error"
+                      : "register-password-hint"
                   }
                   className={fieldErrors.password ? "input-error" : ""}
                   placeholder="At least 8 characters"
@@ -204,7 +235,11 @@ export function RegisterPage({
                   </span>
                 )}
                 {fieldErrors.password && (
-                  <span id="register-password-error" className="field-error" role="alert">
+                  <span
+                    id="register-password-error"
+                    className="field-error"
+                    role="alert"
+                  >
                     {fieldErrors.password}
                   </span>
                 )}

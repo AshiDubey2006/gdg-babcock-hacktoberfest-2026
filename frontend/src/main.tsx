@@ -7,9 +7,11 @@ import { RegisterPage } from "./pages/Register";
 import { ExamsPage } from "./pages/Exams";
 import { ResultsPage } from "./pages/Results";
 import { AdminExamBuilderPage } from "./pages/AdminExamBuilder";
+import Submissions from "./pages/Submissions";
 import { clearStoredToken, getCurrentUser, type UserResponse } from "./api";
 
 const EXAM_BUILDER_PATH = "/admin/exams/new";
+const SUBMISSIONS_PATH = "/submissions";
 
 const Arrow = () => (
   <svg aria-hidden="true" viewBox="0 0 18 18" className="arrow">
@@ -34,17 +36,38 @@ function App() {
       .catch(() => setCurrentUser(null));
   }, []);
 
-  function navigate(path: string, notice?: string) {
-    window.history.pushState({}, "", path);
+  function navigate(path: string, notice?: string, replace = false) {
+    if (replace) {
+      window.history.replaceState({}, "", path);
+    } else {
+      window.history.pushState({}, "", path);
+    }
     setCurrentPath(path);
-    setNoticeMessage(notice || null);
+    setNoticeMessage(notice ?? null);
   }
 
-  function handleLoginSuccess() {
-    getCurrentUser()
-      .then((user) => setCurrentUser(user))
-      .catch(() => setCurrentUser(null));
-    navigate("/");
+  useEffect(() => {
+    if (
+      currentUser &&
+      (currentPath === "/login" || currentPath === "/register")
+    ) {
+      navigate(SUBMISSIONS_PATH, undefined, true);
+    }
+  }, [currentUser, currentPath]);
+
+  // Shared by login and registration: load the user first, then go to the page.
+  async function handleAuthSuccess() {
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+      navigate(SUBMISSIONS_PATH);
+    } catch {
+      setCurrentUser(null);
+      navigate(
+        "/login",
+        "Signed in, but your profile could not be loaded. Please try again.",
+      );
+    }
   }
 
   function handleLogout() {
@@ -58,6 +81,7 @@ function App() {
   const isExamsPage = currentPath === "/exams";
   const isResultsPage = currentPath === "/results";
   const isExamBuilderPage = currentPath === EXAM_BUILDER_PATH;
+  const isSubmissionsPage = currentPath === SUBMISSIONS_PATH;
   const canManageExams =
     currentUser?.role === "admin" || currentUser?.role === "superadmin";
 
@@ -85,7 +109,43 @@ function App() {
         <div className="nav-links">
           {currentUser ? (
             <>
-              <span style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate("/exams")}
+                aria-current={isExamsPage ? "page" : undefined}
+              >
+                Exams
+              </button>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate("/results")}
+                aria-current={isResultsPage ? "page" : undefined}
+              >
+                Results
+              </button>
+              <button
+                type="button"
+                className="nav-text-button"
+                onClick={() => navigate(SUBMISSIONS_PATH)}
+                aria-current={isSubmissionsPage ? "page" : undefined}
+              >
+                Submissions
+              </button>
+              {canManageExams && (
+                <button
+                  type="button"
+                  className="nav-text-button"
+                  onClick={() => navigate(EXAM_BUILDER_PATH)}
+                  aria-current={isExamBuilderPage ? "page" : undefined}
+                >
+                  New exam
+                </button>
+              )}
+              <span
+                style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}
+              >
                 {currentUser.email}
               </span>
               <button
@@ -113,7 +173,7 @@ function App() {
       {/* Login Page */}
       {isLoginPage && (
         <LoginPage
-          onLoginSuccess={handleLoginSuccess}
+          onLoginSuccess={handleAuthSuccess}
           onNavigateToRegister={() => navigate("/register")}
           onCancel={() => navigate("/")}
           noticeMessage={noticeMessage}
@@ -123,12 +183,7 @@ function App() {
       {/* Register Page */}
       {isRegisterPage && (
         <RegisterPage
-          onRegisterSuccess={() =>
-            navigate(
-              "/login",
-              "Account created successfully! Please sign in with your credentials.",
-            )
-          }
+          onRegisterSuccess={handleAuthSuccess}
           onNavigateToLogin={() => navigate("/login")}
           onCancel={() => navigate("/")}
         />
@@ -140,58 +195,64 @@ function App() {
 
       {isExamBuilderPage && <AdminExamBuilderPage />}
 
+      {isSubmissionsPage && <Submissions />}
+
       {!isLoginPage &&
         !isRegisterPage &&
         !isExamsPage &&
         !isResultsPage &&
-        !isExamBuilderPage && (
-        <>
-          <section className="hero hero-centered container" id="top">
-            <div className="hero-copy">
-              <p className="eyebrow">
-                <span className="eyebrow-line" /> AI-ASSISTED GRADING
-              </p>
-              <h1>
-                Clear feedback.
-                <br />
-                <span>Less busywork.</span>
-              </h1>
-              <p className="hero-text">
-                Review AI suggestions, adjust when needed, and share thoughtful
-                feedback with every learner.
-              </p>
-              <div className="hero-actions">
-                <button
-                  type="button"
-                  className="button button-primary"
-                  onClick={() => navigate(currentUser ? "/" : "/login")}
-                >
-                  {currentUser ? "Go to workspace" : "Start grading"} <Arrow />
-                </button>
+        !isExamBuilderPage &&
+        !isSubmissionsPage && (
+          <>
+            <section className="hero hero-centered container" id="top">
+              <div className="hero-copy">
+                <p className="eyebrow">
+                  <span className="eyebrow-line" /> AI-ASSISTED GRADING
+                </p>
+                <h1>
+                  Clear feedback.
+                  <br />
+                  <span>Less busywork.</span>
+                </h1>
+                <p className="hero-text">
+                  Review AI suggestions, adjust when needed, and share
+                  thoughtful feedback with every learner.
+                </p>
+                <div className="hero-actions">
+                  <button
+                    type="button"
+                    className="button button-primary"
+                    onClick={() =>
+                      navigate(currentUser ? SUBMISSIONS_PATH : "/login")
+                    }
+                  >
+                    {currentUser ? "Go to workspace" : "Start grading"}{" "}
+                    <Arrow />
+                  </button>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section className="proof-strip">
-            <div className="proof-inner container">
-              <p>HOW IT WORKS</p>
-              <div className="proof-items">
-                <span>
-                  <b>1.</b> Upload
-                </span>
-                <i />
-                <span>
-                  <b>2.</b> Review
-                </span>
-                <i />
-                <span>
-                  <b>3.</b> Share feedback
-                </span>
+            <section className="proof-strip">
+              <div className="proof-inner container">
+                <p>HOW IT WORKS</p>
+                <div className="proof-items">
+                  <span>
+                    <b>1.</b> Upload
+                  </span>
+                  <i />
+                  <span>
+                    <b>2.</b> Review
+                  </span>
+                  <i />
+                  <span>
+                    <b>3.</b> Share feedback
+                  </span>
+                </div>
               </div>
-            </div>
-          </section>
-        </>
-      )}
+            </section>
+          </>
+        )}
     </main>
   );
 }
