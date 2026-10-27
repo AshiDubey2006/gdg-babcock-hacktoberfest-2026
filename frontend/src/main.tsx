@@ -14,6 +14,7 @@ const ANONYMOUS_SESSION: Session = { status: "anonymous" };
 const SIGN_IN_NOTICE = "Sign in to continue.";
 const SESSION_EXPIRED_NOTICE = "Your session has expired. Please sign in again.";
 
+
 interface AppLocation {
   pathname: string;
   search: string;
@@ -106,11 +107,18 @@ function AppShell({
           type="button"
           className="brand"
           onClick={() => navigate("/")}
-          style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
           aria-label="GDG AI Grader home"
         >
           <span className="brand-mark">G</span>
-          <span>GDG <em>AI</em> Grader</span>
+          <span>
+            GDG <em>AI</em> Grader
+          </span>
         </button>
 
         <NavActions

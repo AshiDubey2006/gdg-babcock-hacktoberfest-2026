@@ -1,4 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import "tailwindcss";
+@theme {
+  --color-brand: #1c754b;
+  --color-brand-dark: #176440;
+  --color-ink: #202b25;
+  --color-muted: #69736d;
+  --color-line: #e0e9e1;
+  --color-canvas: #f7f8f3;
+
+  --color-tone-neutral-bg: #edf2f7;
+  --color-tone-neutral-fg: #2d3748;
+  --color-tone-neutral-border: #e2e8f0;
+  --color-tone-success-bg: #e6f6ee;
+  --color-tone-success-fg: #13633e;
+  --color-tone-success-border: #c0e8d1;
+  --color-tone-warning-bg: #fef7e7;
+  --color-tone-warning-fg: #8f6004;
+  --color-tone-warning-border: #fae7b5;
+
+  --font-display: "Space Grotesk", sans-serif;
+}
 :root {
   font-family: "DM Sans", sans-serif;
   color: #202b25;
@@ -666,7 +687,7 @@ h2 span {
     gap: 10px;
     flex-direction: column;
   }
-  .auth-card{
+  .auth-card {
     box-shadow: none;
     background-color: transparent;
     border: none;
