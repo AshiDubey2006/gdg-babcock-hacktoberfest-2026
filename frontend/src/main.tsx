@@ -1,4 +1,14 @@
-import { Suspense, startTransition, use, useEffect, useState } from "react";
+import {
+  Suspense,
+  startTransition,
+  use,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 import { Arrow } from "./components/Arrow";
@@ -32,51 +42,107 @@ interface NavActionsProps {
 }
 
 function NavActions({ session, pathname, navigate, onLogout }: NavActionsProps) {
-  if (session.status === "loading") {
-    return <div className="nav-links nav-links-pending" />;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  function handleNavigation(event: MouseEvent<HTMLAnchorElement>, path: string) {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    navigate(path);
+    setMenuOpen(false);
   }
 
-  if (session.status === "anonymous") {
-    return (
-      <div className="nav-links">
-        <button
-          type="button"
-          className="nav-button"
-          onClick={() => navigate("/login")}
-        >
-          Open workspace <Arrow />
-        </button>
-      </div>
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === "Escape" && menuOpen) {
+      setMenuOpen(false);
+      menuToggleRef.current?.focus();
+    }
+  }
+
+  if (session.status === "loading") {
+    return renderNavigation(
+      <span className="nav-links-pending" aria-label="Loading navigation" />,
     );
   }
 
-  return (
-    <div className="nav-links">
+  if (session.status === "anonymous") {
+    return renderNavigation(
+      <a
+        className="nav-button"
+        href="/login"
+        onClick={(event) => handleNavigation(event, "/login")}
+      >
+        Open workspace <Arrow />
+      </a>,
+    );
+  }
+
+  return renderNavigation(
+    <>
       {ROUTES.filter((route) => route.navLabel && canAccess(route.access, session)).map(
         (route) => (
-          <button
+          <a
             key={route.path}
-            type="button"
-            className="nav-text-button"
-            onClick={() => navigate(route.path)}
+            className="nav-text-link"
+            href={route.path}
+            onClick={(event) => handleNavigation(event, route.path)}
             aria-current={route.path === pathname ? "page" : undefined}
           >
             {route.navLabel}
-          </button>
+          </a>
         ),
       )}
-      <span style={{ fontSize: "13px", color: "#24754c", fontWeight: 600 }}>
-        {session.user.email}
-      </span>
-      <button
-        type="button"
-        className="nav-button"
-        onClick={onLogout}
-      >
+      <span className="nav-user-email">{session.user.email}</span>
+      <button type="button" className="nav-button" onClick={onLogout}>
         Sign out
       </button>
-    </div>
+    </>,
   );
+
+  function renderNavigation(children: ReactNode) {
+    return (
+      <>
+        <button
+          ref={menuToggleRef}
+          type="button"
+          className="nav-menu-toggle"
+          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            {menuOpen ? (
+              <path d="m6 6 12 12M18 6 6 18" />
+            ) : (
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+        <nav
+          id="primary-navigation"
+          className={`nav-links${menuOpen ? " nav-links-open" : ""}`}
+          aria-label="Main navigation"
+          onKeyDown={handleMenuKeyDown}
+        >
+          {children}
+        </nav>
+      </>
+    );
+  }
 }
 
 interface AppShellProps {
@@ -101,44 +167,52 @@ function AppShell({
   const route = findRoute(location.pathname);
 
   return (
-    <main className="page-shell">
-      <nav className="nav container" aria-label="Main navigation">
-        <button
-          type="button"
-          className="brand"
-          onClick={() => navigate("/")}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-          }}
-          aria-label="GDG AI Grader home"
-        >
-          <span className="brand-mark">G</span>
-          <span>
-            GDG <em>AI</em> Grader
-          </span>
-        </button>
+    <div className="page-shell">
+      <header className="app-header">
+        <div className="nav container">
+          <a
+            className="brand"
+            href="/"
+            onClick={(event) => {
+              if (
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) {
+                return;
+              }
+              event.preventDefault();
+              navigate("/");
+            }}
+            aria-label="GDG AI Grader home"
+          >
+            <span className="brand-mark">G</span>
+            <span>GDG <em>AI</em> Grader</span>
+          </a>
 
-        <NavActions
+          <NavActions
+            session={session}
+            pathname={location.pathname}
+            navigate={navigate}
+            onLogout={onLogout}
+          />
+        </div>
+      </header>
+
+      <main className="app-main">
+        <RouteGuard
+          access={route.access}
           session={session}
-          pathname={location.pathname}
-          navigate={navigate}
-          onLogout={onLogout}
-        />
-      </nav>
-
-      <RouteGuard
-        access={route.access}
-        session={session}
-        returnPath={location.pathname + location.search}
-        onRequireLogin={(loginPath) => replace(loginPath, SIGN_IN_NOTICE)}
-        onBackToExams={() => navigate("/exams")}
-      >
-        {route.render({ session, noticeMessage, navigate, onLoginSuccess })}
-      </RouteGuard>
-    </main>
+          returnPath={location.pathname + location.search}
+          onRequireLogin={(loginPath) => replace(loginPath, SIGN_IN_NOTICE)}
+          onBackToExams={() => navigate("/exams")}
+        >
+          {route.render({ session, noticeMessage, navigate, onLoginSuccess })}
+        </RouteGuard>
+      </main>
+    </div>
   );
 }
 
