@@ -54,10 +54,18 @@ button {
   margin: 0 auto;
 }
 .nav {
+  position: relative;
   height: 94px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.app-header {
+  position: relative;
+  z-index: 10;
+}
+.app-main {
+  min-width: 0;
 }
 .brand {
   display: inline-flex;
@@ -90,9 +98,23 @@ button {
   font-size: 13px;
   font-weight: 600;
 }
-.nav-links a:not(.nav-button):hover,
+.nav-text-link {
+  padding: 8px 0;
+  color: #68736b;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.nav-text-link:hover,
+.nav-text-link[aria-current="page"],
 .text-link:hover {
   color: #1c754b;
+}
+.nav-text-link[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-color: #56a777;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
 }
 .nav-button {
   display: inline-flex;
@@ -106,6 +128,39 @@ button {
   transition:
     transform 0.2s,
     background 0.2s;
+}
+.nav-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  color: #202b25;
+  background: #fff;
+  border: 1px solid #dfe8e0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.nav-menu-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+.nav-menu-toggle:focus-visible,
+.nav-text-link:focus-visible,
+.nav-button:focus-visible,
+.brand:focus-visible {
+  outline: 3px solid #8cbea0;
+  outline-offset: 3px;
+}
+.nav-user-email {
+  color: #24754c;
+  font-size: 13px;
+  font-weight: 600;
 }
 .nav-button:hover,
 .button-primary:hover {
@@ -659,8 +714,46 @@ h2 span {
   .nav {
     height: 76px;
   }
-  .nav-links a:not(.nav-button) {
+  .nav-menu-toggle {
+    display: inline-flex;
+  }
+  .nav-links {
     display: none;
+  }
+  .nav-links.nav-links-open {
+    position: absolute;
+    top: calc(100% - 2px);
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e0e9e1;
+    border-radius: 10px;
+    box-shadow: 0 14px 32px #202b2520;
+  }
+  .nav-links-open .nav-text-link {
+    padding: 12px;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+  .nav-links-open .nav-text-link:hover,
+  .nav-links-open .nav-text-link[aria-current="page"] {
+    background: #eaf3eb;
+  }
+  .nav-links-open .nav-user-email {
+    padding: 12px;
+    border-top: 1px solid #edf0ec;
+  }
+  .nav-links-open .nav-button {
+    justify-content: center;
+  }
+  .nav-links-pending {
+    display: block;
+    min-height: 36px;
   }
   .hero {
     grid-template-columns: 1fr;
@@ -727,21 +820,6 @@ h2 span {
 /* overflow: hidden on .page-shell makes it a scroll container, which stops the summary from sticking. */
 .page-shell:has(.exam-builder) {
   overflow: clip;
-}
-
-.nav-text-button {
-  padding: 0;
-  color: #68736b;
-  background: transparent;
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.nav-text-button:hover,
-.nav-text-button[aria-current="page"] {
-  color: #1c754b;
 }
 
 .exam-builder {
